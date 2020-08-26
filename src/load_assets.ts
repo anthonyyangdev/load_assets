@@ -24,8 +24,12 @@ export type RequireAllFilesConfig = {
  *
  * @param directory
  * @param supported
+ * @param pathPrefix
  */
-function createObjectRep(directory: string, supported: Set<string>): ObjectRepType {
+function createObjectRep(directory: string,
+                         supported: Set<string>,
+                         pathPrefix: string,
+): ObjectRepType {
   const contentObject: ObjectRepType = {};
   const root: UriQueueType = {
     uri: directory,
@@ -47,7 +51,7 @@ function createObjectRep(directory: string, supported: Set<string>): ObjectRepTy
         });
       } else if (stats.isFile() && supported.has(extension)) {
         const key = file.substring(0, file.lastIndexOf(extension)).replace('.', '_');
-        object[key] = `require("./${currentPath}")`
+        object[key] = `require("${pathPrefix}/${currentPath}")`
       }
     }
   }
@@ -60,13 +64,15 @@ function createObjectRep(directory: string, supported: Set<string>): ObjectRepTy
  * @param object
  * @param indents
  */
-export function createContent(object: ObjectRepType, indents: number = 2) {
+export function createContent(object: ObjectRepType,
+                              indents: number = 2,
+) {
   const content = [];
   Object.keys(object).forEach(key => {
     if (typeof object[key] === 'string') {
       content.push(`"${key}": ${object[key]},`);
     } else {
-      const inner = createContent((object[key] as ObjectRepType));
+      const inner = createContent((object[key] as ObjectRepType), indents);
       if (inner !== '{}') {
         content.push(`"${key}": ${inner},`);
       }
@@ -101,13 +107,21 @@ function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   config.includeExt?.forEach(x => supported.add('.' + x.toLowerCase()));
   config.excludeExt?.forEach(x => supported.delete('.' + x.toLowerCase()));
   const targetLang = config?.targetLang ?? 'js';
-  const objectRep = createObjectRep(directory, supported);
+  const outputPath = config.outputFile ?? `assets.${targetLang}`;
+
+  let pathPrefix = path.relative(outputPath, directory);
+  if (pathPrefix.length === 0) {
+    pathPrefix = '.';
+  } else if (pathPrefix[0] !== '.') {
+    pathPrefix = './' + pathPrefix;
+  }
+
+  const objectRep = createObjectRep(directory, supported, pathPrefix);
   const content = createContent(objectRep, config?.indents);
-  const asset = 'export const asset = ' + content + `;`;
-  const output = config?.outputFile ?? `assets.${targetLang}`;
+  const asset = (targetLang === 'js' ? 'module.asset = ' : 'export const asset = ') + content + `;`;
   return {
     content: asset,
-    filename: output
+    filename: outputPath
   };
 }
 
