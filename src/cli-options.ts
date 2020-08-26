@@ -2,11 +2,21 @@ import {RequireAllFilesConfig} from "./load_assets";
 
 type ParseConfig = {
   description: string
+  /**
+   * A function that processes the arguments for a CLI flag.
+   * @param args The arguments given in the CLI.
+   * @param index The index of the flag of interest.
+   * @param config Configuration object.
+   * @param The index af the next CLI argument to be parsed.
+   */
   apply: (args: string[], index: number, config: RequireAllFilesConfig) => number
   alias?: string
 };
 
-const optionsMap: Record<string, ParseConfig> = {
+/**
+ * Map of valid flags for the cli.
+ */
+const ValidFlagsMap: Record<string, ParseConfig> = {
   '--input': {
     description: 'Input absolute or relative path to the directory to be converted into an asset file.',
     alias: '-i',
@@ -53,7 +63,7 @@ const optionsMap: Record<string, ParseConfig> = {
   '--excludeExt': {
     description: "Exclude all extensions following the flag until the end or the next flag.",
     apply: ((args, index, config) => {
-      while (index < args.length && !optionsMap[args[index + 1]]) {
+      while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
         config.excludeExt.push(args[index])
         index += 1;
       }
@@ -64,7 +74,7 @@ const optionsMap: Record<string, ParseConfig> = {
     description: "Include all extensions following the flag until the end or the next flag." +
       "\nBy default, the following extensions are included: jpg, jpeg, png, gif.",
     apply: ((args, index, config) => {
-      while (index < args.length && !optionsMap[args[index + 1]]) {
+      while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
         config.excludeExt.push(args[index])
         index += 1;
       }
@@ -73,16 +83,16 @@ const optionsMap: Record<string, ParseConfig> = {
   }
 };
 
-Object.keys(optionsMap).forEach(flag => {
-  const alias = optionsMap[flag].alias;
-  if (optionsMap[alias] != null) {
+Object.keys(ValidFlagsMap).forEach(flag => {
+  const alias = ValidFlagsMap[flag].alias;
+  if (ValidFlagsMap[alias] != null) {
     console.error(`${alias} is already a defined flag`);
     process.exit(1);
   }
-  optionsMap[alias] = {
-    ...optionsMap[flag],
+  ValidFlagsMap[alias] = {
+    ...ValidFlagsMap[flag],
     alias: flag
   }
 });
 
-export default optionsMap as Readonly<Record<string, ParseConfig>>;
+export default ValidFlagsMap as Readonly<Record<string, ParseConfig>>;

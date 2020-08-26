@@ -15,6 +15,16 @@ export type RequireAllFilesConfig = {
   indents?: number
 };
 
+/**
+ * Creates the literal object that maps to string representation of an asset loaded by require().
+ *
+ * For example: {
+ *   "home": "require('./home.png')"
+ * }
+ *
+ * @param directory
+ * @param supported
+ */
 function createObjectRep(directory: string, supported: Set<string>): ObjectRepType {
   const contentObject: ObjectRepType = {};
   const root: UriQueueType = {
@@ -44,6 +54,12 @@ function createObjectRep(directory: string, supported: Set<string>): ObjectRepTy
   return root.object;
 }
 
+/**
+ * Creates the string representation of the JavaScript object that maps to all assets
+ * loaded with require().
+ * @param object
+ * @param indents
+ */
 export function createContent(object: ObjectRepType, indents: number = 2) {
   const content = [];
   Object.keys(object).forEach(key => {
@@ -65,6 +81,15 @@ type OutputType = {
   err?: string
 }
 
+/**
+ * Generates an asset file of the target language if an inputDirectory is given.
+ * If an inputDirectory is not given, then this function returns an error value.
+ *
+ * The default target language is JavaScript. The default indentation of the
+ * output file is 2.
+ *
+ * @param config Configuration object.
+ */
 function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   const directory = config.inputDirectory ?? "";
   const stat = fs.lstatSync(directory);
