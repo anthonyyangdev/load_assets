@@ -8,10 +8,10 @@
     "outDir": "dist"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/test"
   ],
   "include": [
-    "src/",
-    "src/test/"
+    "src/"
   ]
 }

@@ -5,6 +5,9 @@
   "main": "dist/index.js",
   "license": "MIT",
   "description": "Generates a JavaScript file that loads all files via 'require' in a given directory. This is stored as an exported object.",
+  "bin": {
+    "load_required_assets": "dist/load_assets-cli.js"
+  },
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.test.ts",
     "prepublish": "tsc"

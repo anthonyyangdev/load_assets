@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import generateRequireAllFiles, {RequireAllFilesOptions} from "./load_assets";
 import fs from 'fs';
 import path from 'path';

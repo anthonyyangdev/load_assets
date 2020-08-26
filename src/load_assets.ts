@@ -72,9 +72,7 @@ function generateRequireAllFiles(directory: string, options?: RequireAllFilesOpt
   const supported = new Set<string>();
   ['.jpg', '.png', '.gif'].forEach(x => supported.add(x));
   if (options != null) {
-    console.log(options.includeExt);
     options.includeExt?.forEach(x => supported.add('.' + x.toLowerCase()));
-    console.log(options.excludeExt);
     options.excludeExt?.forEach(x => supported.delete('.' + x.toLowerCase()));
   }
   const targetLang = options?.targetLang ?? 'js';
