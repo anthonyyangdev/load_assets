@@ -46,7 +46,7 @@ function createObjectRep(directory: string,
     const files = fs.readdirSync(uri);
     for (let file of files) {
       const currentPath = path.join(uri, file);
-      const fullPath = path.join(pathPrefix, file);
+      let fullPath = path.join(pathPrefix, file);
       const extension = path.extname(file).toLowerCase();
       const stats = fs.lstatSync(currentPath);
       if (stats.isDirectory()) {
@@ -58,6 +58,11 @@ function createObjectRep(directory: string,
         });
       } else if (stats.isFile() && supported.has(extension)) {
         const key = file.substring(0, file.lastIndexOf(extension)).replace('.', '_');
+        if (fullPath.length === 0) {
+          fullPath = '.';
+        } else if (fullPath[0] !== '.') {
+          fullPath = './' + fullPath;
+        }
         object[key] = `require("${fullPath}")`
       }
     }
@@ -117,12 +122,6 @@ function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   const outputPath = config.outputFile ?? `assets.${targetLang}`;
 
   let pathPrefix = path.relative(path.dirname(outputPath), directory);
-  if (pathPrefix.length === 0) {
-    pathPrefix = '.';
-  } else if (pathPrefix[0] !== '.') {
-    pathPrefix = './' + pathPrefix;
-  }
-
   const objectRep = createObjectRep(directory, supported, pathPrefix);
   const content = createContent(objectRep, config?.indents);
   const asset = (targetLang === 'js' ? 'module.asset = ' : 'export const asset = ') + content + `;`;
