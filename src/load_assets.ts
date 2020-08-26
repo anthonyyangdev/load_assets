@@ -3,12 +3,13 @@ import path from 'path'
 import indentString from 'indent-string'
 import mapValues from './common/mapValues'
 
-interface ObjectRepType extends Record<string, string | ObjectRepType> {}
+interface ObjectRepType extends Record<string, [number, string] | ObjectRepType> {}
 type SupportedLangType = 'ts' | 'js';
 type PathQueueType = {
   pathFromCall: string
   object: Record<string, any>
   pathFromOutput: string
+  level: number
 };
 
 export type RequireAllFilesConfig = {
@@ -48,11 +49,12 @@ export function createObjectRep (directory: string,
   const root: PathQueueType = {
     pathFromCall: directory,
     object: filenameToObject,
-    pathFromOutput: pathPrefix
+    pathFromOutput: pathPrefix,
+    level: 1
   }
   const queue: PathQueueType[] = [root]
   while (queue.length > 0) {
-    const { pathFromCall, object, pathFromOutput } = queue.shift()
+    const { pathFromCall, object, pathFromOutput, level } = queue.shift()
     const files = fs.readdirSync(pathFromCall)
     for (const file of files) {
       const currentPath = path.join(pathFromCall, file)
@@ -67,7 +69,8 @@ export function createObjectRep (directory: string,
         queue.push({
           pathFromCall: currentPath,
           object: updatedMapping,
-          pathFromOutput: fullPath
+          pathFromOutput: fullPath,
+          level: level + 1
         })
       } else if (stats.isFile() && supported.has(extension)) {
         const key = file.substring(0, file.lastIndexOf(extension))
@@ -76,7 +79,7 @@ export function createObjectRep (directory: string,
         } else if (fullPath[0] !== '.') {
           fullPath = './' + fullPath
         }
-        object[extension][key] = `require("${fullPath}")`
+        object[extension][key] = [level, `require("${fullPath}")`]
       }
     }
   }
@@ -88,20 +91,29 @@ export function createObjectRep (directory: string,
  * loaded with require().
  * @param object
  * @param indents
+ * @param braceLevel
  */
-export function createContent (object: ObjectRepType, indents: number = 2) {
-  const content = []
+export function createContent (object: ObjectRepType, indents: number = 2, braceLevel = 0): string[] {
+  const content: string[] = []
   Object.keys(object).forEach(key => {
-    if (typeof object[key] === 'string') {
-      content.push(`"${key}": ${object[key]},`)
+    if (object[key] instanceof Array) {
+      const [level, v] = object[key] as [number, string]
+      content.push(' '.repeat(level * indents) + `"${key}": ${v},`)
     } else {
-      const inner = createContent((object[key] as ObjectRepType), indents)
-      if (inner !== '{}') {
-        content.push(`"${key}": ${inner},`)
+      const inner = createContent((object[key] as ObjectRepType), indents, braceLevel + 1)
+      if (inner.length > 0) {
+        inner[0] = ' '.repeat((braceLevel + 1) * indents) + `"${key}": ${inner[0]}`
+        content.push(...inner)
       }
     }
   })
-  return content.length > 0 ? '{\n' + indentString(content.join('\n'), indents) + '\n}' : '{}'
+  if (content.length > 0) {
+    content.unshift(' '.repeat(braceLevel * indents) + '{')
+    content.push(' '.repeat(braceLevel * indents) + '},')
+    return content
+  } else {
+    return []
+  }
 }
 
 /**
@@ -128,8 +140,8 @@ const getFullObjectBody = (objectRep: Record<string, ObjectRepType>, indents: nu
   Object.keys(objectRep).forEach(k => {
     const ext = k.substring(1)
     const object = createContent(objectRep[k], indents)
-    if (object !== '{}') {
-      content.push(`${ext}: ` + createContent(objectRep[k], indents) + ',')
+    if (object.length > 0) {
+      content.push(`${ext}: ` + object.join('\n'))
     }
   })
   if (content.length === 0) {
