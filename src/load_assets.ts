@@ -103,8 +103,7 @@ function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   const targetLang = config?.targetLang ?? 'js';
   const objectRep = createObjectRep(directory, supported);
   const content = createContent(objectRep, config?.indents);
-  const exportMethod = targetLang === 'js' ? 'module.exports = asset;' : 'export default asset;';
-  const asset = 'const asset = ' + content + `;\n\n${exportMethod}`;
+  const asset = 'export const asset = ' + content + `;`;
   const output = config?.outputFile ?? `assets.${targetLang}`;
   return {
     content: asset,
