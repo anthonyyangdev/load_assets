@@ -4,7 +4,7 @@ This was built to support writing many imports/require statements for bundlers t
 
 ## Install
 ```bash
-npm install -g @ayang4114/load_assets
+npm install -g load_assets
 ```
 
 ## Usage
