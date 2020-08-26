@@ -16,9 +16,7 @@
     "email": "ayang4114@gmail.com",
     "name": "Anthony Yang"
   },
-  "dependencies": {
-    "indent-string": "^4.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",

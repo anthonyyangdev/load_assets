@@ -11,6 +11,7 @@ type ParseConfig = {
    * @param The index af the next CLI argument to be parsed.
    */
   apply: (args: string[], index: number, config: RequireAllFilesConfig) => number
+  arguments: string
   alias?: string
 };
 
@@ -24,7 +25,8 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     apply: (args, index, config) => {
       config.inputDirectory = args[index + 1]
       return index + 2
-    }
+    },
+    arguments: 'A path string'
   },
   '--output': {
     description: 'The output path name of the converted asset file.',
@@ -32,7 +34,8 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     apply: (args, index, config) => {
       config.outputFile = args[index + 1]
       return index + 2
-    }
+    },
+    arguments: 'A path string'
   },
   '--targetLang': {
     description: 'The target language of the output asset file.',
@@ -46,7 +49,8 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
         process.exit(1)
       }
       return index + 2
-    }
+    },
+    arguments: "'ts' or 'js'"
   },
   '--indents': {
     description: 'The number of indents in output file.',
@@ -59,7 +63,8 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
         process.exit(1)
       }
       return index + 2
-    }
+    },
+    arguments: 'A non-negative number'
   },
   '--excludeExt': {
     description: 'A sequence of all filetype extensions to ignore when traversing the assets directory.',
@@ -69,19 +74,59 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
         index += 1
       }
       return index + 1
-    }
+    },
+    arguments: 'A sequence of space-separated strings'
   },
   '--includeExt': {
     description: 'A sequence of all filetype extensions to include when traversing the assets directory.' +
-      '\nBy default, the following extensions are included: jpg, jpeg, png, gif.',
+      '\n\t\tBy default, the following extensions are included: jpg, jpeg, png, gif.',
     apply: (args, index, config) => {
       while (index < args.length - 1 && !ValidFlagsMap[args[index + 1]]) {
         config.includeExt.push(args[index + 1])
         index += 1
       }
       return index + 1
-    }
+    },
+    arguments: 'A sequence of space-separated strings'
   }
+}
+
+ValidFlagsMap['--help'] = {
+  alias: '-h',
+  apply (args: string[], index: number, config: RequireAllFilesConfig): number {
+    const flags = new Set<string>()
+    Object.keys(ValidFlagsMap).forEach(k => {
+      const alias = ValidFlagsMap[k].alias
+      if (alias == null || (!flags.has(alias) && !flags.has(k))) {
+        flags.add(k)
+      }
+    })
+    console.log('\nName: load_assets\n')
+
+    console.log('Description:')
+    const description = ['\t\tA command that generates a JavaScript file which contains an object that maps to',
+      '\t\tloaded assets from a directory, including static images files, using require(...). Built to support creating',
+      '\t\timports for bundlers that load static assets.']
+    console.log(description.join('\n'))
+
+    console.log('Usage:')
+    console.log('\t\tload_assets <path_to_assets_directory> [...flags]\n')
+
+    console.log('Flags:')
+    flags.forEach(flag => {
+      const alias = ValidFlagsMap[flag].alias
+      const flagArray = [flag]
+      if (alias != null) flagArray.push(alias)
+
+      console.log(flagArray.sort().join(', '))
+      console.log('\tDescription:\n\t\t' + ValidFlagsMap[flag].description)
+      console.log('\tArguments:\n\t\t' + ValidFlagsMap[flag].arguments)
+      console.log()
+    })
+    process.exit(0)
+  },
+  description: 'Displays a help screen that explains details of flags and usage.',
+  arguments: 'none'
 }
 
 Object.keys(ValidFlagsMap).forEach(flag => {
