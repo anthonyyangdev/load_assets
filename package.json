@@ -17,12 +17,10 @@
     "name": "Anthony Yang"
   },
   "dependencies": {
-    "indent-string": "^4.0.0",
-    "lodash": "^4.17.20"
+    "indent-string": "^4.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.12",
-    "@types/lodash": "^4.14.160",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.6.0",
     "@typescript-eslint/eslint-plugin": "^3.10.1",

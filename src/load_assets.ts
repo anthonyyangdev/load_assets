@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { mapValues } from 'lodash'
 import indentString from 'indent-string'
+import mapValues from './common/mapValues'
 
 interface ObjectRepType extends Record<string, string | ObjectRepType> {}
 type SupportedLangType = 'ts' | 'js';
