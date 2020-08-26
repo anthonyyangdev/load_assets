@@ -53,11 +53,11 @@ export function createObjectRep(directory: string,
   };
   const queue: UriQueueType[] = [root];
   while (queue.length > 0) {
-    const {pathFromCall, object} = queue.shift();
+    const {pathFromCall, object, pathFromOutput} = queue.shift();
     const files = fs.readdirSync(pathFromCall);
     for (let file of files) {
       const currentPath = path.join(pathFromCall, file);
-      let fullPath = path.join(pathPrefix, file);
+      let fullPath = path.join(pathFromOutput, file);
       const extension = path.extname(file).toLowerCase();
       const stats = fs.lstatSync(currentPath);
       if (stats.isDirectory()) {

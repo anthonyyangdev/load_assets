@@ -18,7 +18,7 @@ type ParseConfig = {
  */
 const ValidFlagsMap: Record<string, ParseConfig> = {
   '--input': {
-    description: 'Input absolute or relative path to the directory to be converted into an asset file.',
+    description: 'The absolute or relative path to the directory to be converted into an asset file.',
     alias: '-i',
     apply: (args, index, config) => {
       config.inputDirectory = args[index + 1];
@@ -26,7 +26,7 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     }
   },
   '--output': {
-    description: 'Output path of the converted asset file.',
+    description: 'The output path name of the converted asset file.',
     alias: '-o',
     apply: ((args, index, config) => {
       config.outputFile = args[index + 1];
@@ -34,7 +34,7 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     })
   },
   '--targetLang': {
-    description: 'Target language of the output asset file.',
+    description: 'The target language of the output asset file.',
     alias: '-t',
     apply: ((args, index, config) => {
       const target = args[index + 1];
@@ -48,7 +48,7 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     })
   },
   '--indents': {
-    description: "Number of indents in output file.",
+    description: "The number of indents in output file.",
     apply: (((args, index, config) => {
       const count = Number.parseInt(args[index + 1]);
       if (Number.isSafeInteger(count)) {
@@ -61,7 +61,7 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     }))
   },
   '--excludeExt': {
-    description: "Exclude all extensions following the flag until the end or the next flag.",
+    description: "A sequence of all filetype extensions to ignore when traversing the assets directory.",
     apply: ((args, index, config) => {
       while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
         config.excludeExt.push(args[index])
@@ -71,7 +71,7 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     })
   },
   '--includeExt': {
-    description: "Include all extensions following the flag until the end or the next flag." +
+    description: "A sequence of all filetype extensions to include when traversing the assets directory." +
       "\nBy default, the following extensions are included: jpg, jpeg, png, gif.",
     apply: ((args, index, config) => {
       while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
