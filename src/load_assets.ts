@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import indentString from 'indent-string'
 import mapValues from './common/mapValues'
 
 interface ObjectRepType extends Record<string, [number, string] | ObjectRepType> {}
@@ -93,12 +92,12 @@ export function createObjectRep (directory: string,
  * @param indents
  * @param braceLevel
  */
-export function createContent (object: ObjectRepType, indents: number = 2, braceLevel = 0): string[] {
+export function createContent (object: ObjectRepType, indents: number = 2, braceLevel = 1): string[] {
   const content: string[] = []
   Object.keys(object).forEach(key => {
     if (object[key] instanceof Array) {
       const [level, v] = object[key] as [number, string]
-      content.push(' '.repeat(level * indents) + `"${key}": ${v},`)
+      content.push(' '.repeat((level + 1) * indents) + `"${key}": ${v},`)
     } else {
       const inner = createContent((object[key] as ObjectRepType), indents, braceLevel + 1)
       if (inner.length > 0) {
@@ -108,7 +107,7 @@ export function createContent (object: ObjectRepType, indents: number = 2, brace
     }
   })
   if (content.length > 0) {
-    content.unshift(' '.repeat(braceLevel * indents) + '{')
+    content.unshift('{')
     content.push(' '.repeat(braceLevel * indents) + '},')
     return content
   } else {
@@ -139,15 +138,15 @@ const getFullObjectBody = (objectRep: Record<string, ObjectRepType>, indents: nu
   const content: string[] = []
   Object.keys(objectRep).forEach(k => {
     const ext = k.substring(1)
-    const object = createContent(objectRep[k], indents)
+    const object = createContent(objectRep[k], indents, 1)
     if (object.length > 0) {
-      content.push(`${ext}: ` + object.join('\n'))
+      content.push(' '.repeat(indents) + `${ext}: ` + object.join('\n'))
     }
   })
   if (content.length === 0) {
     return '{}'
   } else {
-    return '{\n' + indentString(content.join('\n'), indents) + '\n}'
+    return '{\n' + content.join('\n') + '\n}'
   }
 }
 
@@ -184,7 +183,7 @@ function generateRequireAllFiles (config: RequireAllFilesConfig): MainOutputType
   const content = getFullObjectBody(objectRep, config.indents ?? 2)
   const asset = (targetLang === 'js' ? 'module.asset = ' : 'export const asset = ') + content + ';'
   return {
-    content: asset,
+    content: '/* tslint:disable */\n/* eslint-disable */\n' + asset,
     filename: outputPath
   }
 }
