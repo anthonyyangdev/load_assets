@@ -75,7 +75,7 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
       "\nBy default, the following extensions are included: jpg, jpeg, png, gif.",
     apply: ((args, index, config) => {
       while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
-        config.excludeExt.push(args[index])
+        config.includeExt.push(args[index])
         index += 1;
       }
       return index;
