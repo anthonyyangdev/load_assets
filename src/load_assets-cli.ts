@@ -7,9 +7,11 @@ import optionsMap from "./cli-options";
 
 const params = process.argv.slice(2);
 
-const config: RequireAllFilesConfig = {};
-config.includeExt = [];
-config.excludeExt = [];
+const config: RequireAllFilesConfig = {
+  includeExt: [],
+  excludeExt: [],
+  inputDirectory: ""
+};
 
 let index = 0;
 while (index < params.length) {
