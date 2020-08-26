@@ -88,10 +88,11 @@ Object.keys(ValidFlagsMap).forEach(flag => {
   if (ValidFlagsMap[alias] != null) {
     console.error(`${alias} is already a defined flag`);
     process.exit(1);
-  }
-  ValidFlagsMap[alias] = {
-    ...ValidFlagsMap[flag],
-    alias: flag
+  } else if (alias != null) {
+    ValidFlagsMap[alias] = {
+      ...ValidFlagsMap[flag],
+      alias: flag
+    }
   }
 });
 
