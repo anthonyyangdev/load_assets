@@ -159,8 +159,17 @@ function generateRequireAllFiles(config: RequireAllFilesConfig): MainOutputType 
     return {err: `${directory} is not a directory.`, filename: "", content: ""};
   }
   const supportedExt = getSupportedFiles(config.includeExt, config.excludeExt);
-  const targetLang = config.targetLang ?? 'js';
-  const outputPath = config.outputFile ?? `assets.${targetLang}`;
+  let outputPath: string;
+  let targetLang = config.targetLang ?? 'js';
+  if (config.outputFile != null) {
+    outputPath = config.outputFile;
+    const actualExtension = path.extname(outputPath).substring(1);
+    if (actualExtension && actualExtension === 'js' || actualExtension === 'ts') {
+      targetLang = actualExtension;
+    }
+  } else {
+    outputPath = `assets.${targetLang}`;
+  }
 
   let pathPrefix = path.relative(path.dirname(outputPath), directory);
   const objectRep = createObjectRep(directory, supportedExt, pathPrefix);
