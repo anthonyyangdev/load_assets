@@ -10,7 +10,8 @@
   },
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.test.ts",
-    "prepublish": "tsc"
+    "prepublish": "tsc",
+    "clean": "rm -rf dist/"
   },
   "author": "",
   "dependencies": {
