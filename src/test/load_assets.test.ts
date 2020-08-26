@@ -1,8 +1,23 @@
 import {it, describe} from 'mocha';
 import chai, {expect} from 'chai';
-import {createContent} from '../load_assets';
+import {createContent, createObjectRep} from '../load_assets';
 
-describe('Test suite', function () {
+describe('Test suite for createObjectRep', function () {
+  const supported = new Set<string>();
+  supported.add('.png');
+  supported.add('.jpg');
+  it('should create empty map representation', function () {
+    const rep = createObjectRep("src/test/rep", supported, './');
+    expect(rep).has.property('.png');
+    expect(rep['.png']).has.keys('earth', 'nested');
+    expect(rep).has.property('.jpg');
+    expect(rep['.jpg']).has.keys('moon', 'sun', 'nested');
+    expect(rep['.jpg']['nested']).has.keys('moon');
+    expect(rep['.png']['nested']).has.keys('earth');
+  });
+});
+
+describe('Test suite for createContent', function () {
   it('should create empty object string', function () {
     const noContent = {};
     const result = createContent(noContent);

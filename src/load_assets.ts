@@ -2,14 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import indent from 'indent-string';
 import {mapValues} from 'lodash';
+import indentString from "indent-string";
 
 interface ObjectRepType extends Record<string, string | ObjectRepType> {}
 type SupportedLangType = 'ts' | 'js';
 type UriQueueType = {
   uri: string
   object: Record<string, any>
-  fullPath: string,
-  extension: string
+  fullPath: string
 };
 
 export type RequireAllFilesConfig = {
@@ -35,15 +35,14 @@ export type RequireAllFilesConfig = {
 export function createObjectRep(directory: string,
                          supported: Set<string>,
                          pathPrefix: string,
-): ObjectRepType {
+): Record<string, ObjectRepType> {
   const supportedExtensions: [string, object][] = [];
   supported.forEach(ext => supportedExtensions.push([ext, {}]))
   const filenameToObject = Object.fromEntries(supportedExtensions);
   const root: UriQueueType = {
     uri: directory,
     object: filenameToObject,
-    fullPath: pathPrefix,
-    extension: ""
+    fullPath: pathPrefix
   };
   const queue: UriQueueType[] = [root];
   while (queue.length > 0) {
@@ -62,8 +61,7 @@ export function createObjectRep(directory: string,
         queue.push({
           uri: currentPath,
           object: updatedMapping,
-          fullPath: fullPath,
-          extension: extension
+          fullPath: fullPath
         });
       } else if (stats.isFile() && supported.has(extension)) {
         const key = file.substring(0, file.lastIndexOf(extension));
@@ -126,13 +124,28 @@ function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   ['.jpg', '.jpeg', '.png', '.gif'].forEach(x => supported.add(x));
   config.includeExt?.forEach(x => supported.add('.' + x.toLowerCase()));
   config.excludeExt?.forEach(x => supported.delete('.' + x.toLowerCase()));
-  const targetLang = config?.targetLang ?? 'js';
+  const targetLang = config.targetLang ?? 'js';
   const outputPath = config.outputFile ?? `assets.${targetLang}`;
 
   let pathPrefix = path.relative(path.dirname(outputPath), directory);
   const objectRep = createObjectRep(directory, supported, pathPrefix);
-  const content = createContent(objectRep, config?.indents);
-  const asset = (targetLang === 'js' ? 'module.asset = ' : 'export const asset = ') + content + `;`;
+
+  const content: string[] = [];
+  Object.keys(objectRep).forEach(k => {
+    const ext = k.substring(1);
+    const object = createContent(objectRep[k], config.indents);
+    if (object != '{}') {
+      content.push(`${ext}: ` + createContent(objectRep[k], config.indents) + ',');
+    }
+  })
+
+  let contentString: string;
+  if (content.length == 0) {
+    contentString = '{}'
+  } else {
+    contentString = '{\n' + indentString(content.join("\n"), config.indents ?? 2) + "\n}";
+  }
+  const asset = (targetLang === 'js' ? 'module.asset = ' : 'export const asset = ') + contentString + `;`;
   return {
     content: asset,
     filename: outputPath
