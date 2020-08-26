@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { RequireAllFilesConfig } from './load_assets'
+import { loadavg } from 'os'
 
 type ParseConfig = {
   description: string
@@ -65,10 +66,10 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
     description: 'A sequence of all filetype extensions to ignore when traversing the assets directory.',
     apply: (args, index, config) => {
       while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
-        config.excludeExt.push(args[index])
+        config.excludeExt.push(args[index + 1])
         index += 1
       }
-      return index
+      return index + 1
     }
   },
   '--includeExt': {
@@ -76,10 +77,10 @@ const ValidFlagsMap: Record<string, ParseConfig> = {
       '\nBy default, the following extensions are included: jpg, jpeg, png, gif.',
     apply: (args, index, config) => {
       while (index < args.length && !ValidFlagsMap[args[index + 1]]) {
-        config.includeExt.push(args[index])
+        config.includeExt.push(args[index + 1])
         index += 1
       }
-      return index
+      return index + 1
     }
   }
 }
