@@ -1,4 +1,6 @@
 import generateRequireAllFiles, {RequireAllFilesOptions} from "./load_assets";
+import fs from 'fs';
+import path from 'path';
 
 const args = process.argv.slice(2);
 
@@ -59,4 +61,18 @@ for (let i = 0; i < args.length; i++) {
   }
 }
 
-generateRequireAllFiles(directoryName, options);
+if (directoryName.trim() !== "") {
+  const {filename, content, err} = generateRequireAllFiles(directoryName, options);
+  if (err != null) {
+    console.log(err);
+  } else {
+    const directory = path.dirname(filename);
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory, {recursive: true});
+    }
+    fs.writeFileSync(filename, content);
+  }
+} else {
+  console.log("No directory given.");
+  process.exit(1);
+}

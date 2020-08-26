@@ -58,10 +58,16 @@ export function createContent(object: ObjectRepType, indents: number = 2) {
   return content.length > 0 ? "{\n" + indent(content.join("\n"), indents) + "\n}" : "{}";
 }
 
-function generateRequireAllFiles(directory: string, options?: RequireAllFilesOptions) {
+type OutputType = {
+  filename: string
+  content: string
+  err?: string
+}
+
+function generateRequireAllFiles(directory: string, options?: RequireAllFilesOptions): OutputType {
   const stat = fs.lstatSync(directory);
   if (!stat.isDirectory()) {
-    return `${directory} is not a directory.`;
+    return {err: `${directory} is not a directory.`, filename: "", content: ""};
   }
   const supported = new Set<string>();
   ['.jpg', '.png', '.gif'].forEach(x => supported.add(x));
@@ -77,7 +83,11 @@ function generateRequireAllFiles(directory: string, options?: RequireAllFilesOpt
   const exportMethod = targetLang === 'js' ? 'module.exports = asset;' : 'export default asset;';
   const asset = 'const asset = ' + content + `;\n\n${exportMethod}`;
   const output = options?.outputFile ?? `assets.${targetLang}`;
-  fs.writeFileSync(output, asset);
+
+  return {
+    content: asset,
+    filename: output
+  };
 }
 
 export default generateRequireAllFiles;
