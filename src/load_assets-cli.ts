@@ -26,6 +26,7 @@ if (config.inputDirectory.trim() !== "") {
   const {filename, content, err} = generateRequireAllFiles(config);
   if (err != null) {
     console.log(err);
+    process.exit(1);
   } else {
     const directory = path.dirname(filename);
     if (!fs.existsSync(directory)) {

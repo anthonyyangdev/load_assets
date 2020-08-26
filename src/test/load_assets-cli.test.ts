@@ -52,4 +52,12 @@ describe('load assets cli test suite', function () {
     });
   });
 
+  it('should exit with code 1 if the directory does not exist', function (done) {
+    exec('ts-node src/load_assets-cli.ts something/that/does/not/exist', err => {
+      expect(err).to.not.be.null;
+      expect(err.code).to.equal(1);
+      done();
+    })
+  });
+
 });

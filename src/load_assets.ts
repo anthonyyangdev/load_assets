@@ -110,8 +110,7 @@ type OutputType = {
  */
 function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   const directory = config.inputDirectory ?? "";
-  const stat = fs.lstatSync(directory);
-  if (!stat.isDirectory()) {
+  if (!fs.existsSync(directory) || !fs.lstatSync(directory).isDirectory()) {
     return {err: `${directory} is not a directory.`, filename: "", content: ""};
   }
   const supported = new Set<string>();
