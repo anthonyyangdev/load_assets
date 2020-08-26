@@ -1,5 +1,5 @@
 {
-  "name": "load_assets",
+  "name": "@ayang4114/load_assets",
   "version": "0.1.0",
   "license": "MIT",
   "description": "Generates a JavaScript file that loads all files via 'require' in a given directory. This is stored as an exported object.",
@@ -12,7 +12,10 @@
     "clean": "rm -rf dist/"
   },
   "repository": "https://github.com/ayang4114/load_assets.git",
-  "author": "Anthony Yang",
+  "author": {
+    "email": "ayang4114@gmail.com",
+    "name": "Anthony Yang"
+  },
   "dependencies": {
     "@types/lodash": "^4.14.160",
     "indent-string": "^4.0.0",
