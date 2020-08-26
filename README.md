@@ -43,7 +43,7 @@ assets
 └── sun.jpg
 ```
 
-Then, `load_required_assets assets` will produce the following output:
+Then, `load_required_assets assets` will produce the following output in `assets.js`:
 
 ```javascript
 module.asset = {
