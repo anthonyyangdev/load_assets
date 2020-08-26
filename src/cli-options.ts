@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-unused-vars
 import { RequireAllFilesConfig } from './load_assets'
-import { loadavg } from 'os'
 
 type ParseConfig = {
   description: string
