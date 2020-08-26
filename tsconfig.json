@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "target": "es5",
     "sourceMap": true,
     "esModuleInterop": true,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": ["ESNext"],
+    "noFallthroughCasesInSwitch": true,
+    "removeComments": true
   },
   "exclude": [
     "node_modules",

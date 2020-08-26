@@ -13,12 +13,14 @@
   },
   "author": "",
   "dependencies": {
-    "indent-string": "^4.0.0"
+    "indent-string": "^4.0.0",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@types/node": "^14.6.0",
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
+    "@types/lodash": "^4.14.160",
     "chai": "^4.2.0",
     "mocha": "^8.1.2",
     "ts-node": "^9.0.0",

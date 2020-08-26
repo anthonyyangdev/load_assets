@@ -6,7 +6,8 @@ interface ObjectRepType extends Record<string, string | ObjectRepType> {}
 type SupportedLangType = 'ts' | 'js';
 type UriQueueType = {uri: string, object: Record<string, any>};
 
-export type RequireAllFilesOptions = {
+export type RequireAllFilesConfig = {
+  inputDirectory?: string
   includeExt?: string[]
   excludeExt?: string[]
   targetLang?: SupportedLangType;
@@ -64,24 +65,22 @@ type OutputType = {
   err?: string
 }
 
-function generateRequireAllFiles(directory: string, options?: RequireAllFilesOptions): OutputType {
+function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
+  const directory = config.inputDirectory ?? "";
   const stat = fs.lstatSync(directory);
   if (!stat.isDirectory()) {
     return {err: `${directory} is not a directory.`, filename: "", content: ""};
   }
   const supported = new Set<string>();
-  ['.jpg', '.png', '.gif'].forEach(x => supported.add(x));
-  if (options != null) {
-    options.includeExt?.forEach(x => supported.add('.' + x.toLowerCase()));
-    options.excludeExt?.forEach(x => supported.delete('.' + x.toLowerCase()));
-  }
-  const targetLang = options?.targetLang ?? 'js';
+  ['.jpg', '.jpeg', '.png', '.gif'].forEach(x => supported.add(x));
+  config.includeExt?.forEach(x => supported.add('.' + x.toLowerCase()));
+  config.excludeExt?.forEach(x => supported.delete('.' + x.toLowerCase()));
+  const targetLang = config?.targetLang ?? 'js';
   const objectRep = createObjectRep(directory, supported);
-  const content = createContent(objectRep, options?.indents);
+  const content = createContent(objectRep, config?.indents);
   const exportMethod = targetLang === 'js' ? 'module.exports = asset;' : 'export default asset;';
   const asset = 'const asset = ' + content + `;\n\n${exportMethod}`;
-  const output = options?.outputFile ?? `assets.${targetLang}`;
-
+  const output = config?.outputFile ?? `assets.${targetLang}`;
   return {
     content: asset,
     filename: output
