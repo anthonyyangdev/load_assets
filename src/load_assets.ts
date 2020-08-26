@@ -1,13 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import indent from 'indent-string';
+import {mapValues} from 'lodash';
 
 interface ObjectRepType extends Record<string, string | ObjectRepType> {}
 type SupportedLangType = 'ts' | 'js';
 type UriQueueType = {
   uri: string
   object: Record<string, any>
-  fullPath: string
+  fullPath: string,
+  extension: string
 };
 
 export type RequireAllFilesConfig = {
@@ -30,15 +32,18 @@ export type RequireAllFilesConfig = {
  * @param supported
  * @param pathPrefix
  */
-function createObjectRep(directory: string,
+export function createObjectRep(directory: string,
                          supported: Set<string>,
                          pathPrefix: string,
 ): ObjectRepType {
-  const contentObject: ObjectRepType = {};
+  const supportedExtensions: [string, object][] = [];
+  supported.forEach(ext => supportedExtensions.push([ext, {}]))
+  const filenameToObject = Object.fromEntries(supportedExtensions);
   const root: UriQueueType = {
     uri: directory,
-    object: contentObject,
-    fullPath: pathPrefix
+    object: filenameToObject,
+    fullPath: pathPrefix,
+    extension: ""
   };
   const queue: UriQueueType[] = [root];
   while (queue.length > 0) {
@@ -50,20 +55,24 @@ function createObjectRep(directory: string,
       const extension = path.extname(file).toLowerCase();
       const stats = fs.lstatSync(currentPath);
       if (stats.isDirectory()) {
-        object[file] = {};
+        const updatedMapping = mapValues(object, v => {
+          v[file] = {};
+          return v[file];
+        });
         queue.push({
           uri: currentPath,
-          object: object[file],
-          fullPath: fullPath
+          object: updatedMapping,
+          fullPath: fullPath,
+          extension: extension
         });
       } else if (stats.isFile() && supported.has(extension)) {
-        const key = file.substring(0, file.lastIndexOf(extension)).replace('.', '_');
+        const key = file.substring(0, file.lastIndexOf(extension));
         if (fullPath.length === 0) {
           fullPath = '.';
         } else if (fullPath[0] !== '.') {
           fullPath = './' + fullPath;
         }
-        object[key] = `require("${fullPath}")`
+        object[extension][key] = `require("${fullPath}")`
       }
     }
   }
