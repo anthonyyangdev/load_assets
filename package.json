@@ -1,12 +1,13 @@
 {
   "name": "load_assets",
   "version": "1.0.0",
+  "type": "module",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "license": "MIT",
   "description": "Generates a JavaScript file that loads all files via 'require' in a given directory. This is stored as an exported object.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha -r ts-node/register src/**/*.test.ts",
     "prepublish": "tsc"
   },
   "author": "",
@@ -18,6 +19,8 @@
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
     "chai": "^4.2.0",
-    "mocha": "^8.1.2"
+    "mocha": "^8.1.2",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
   }
 }

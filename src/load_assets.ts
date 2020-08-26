@@ -36,22 +36,22 @@ function createObjectRep(directory: string, supported: Set<string>): ObjectRepTy
         });
       } else if (stats.isFile() && supported.has(extension)) {
         const key = file.substring(0, file.lastIndexOf(extension)).replace('.', '_');
-        object[key] = `require('./${currentPath}')`
+        object[key] = `require("./${currentPath}")`
       }
     }
   }
   return root.object;
 }
 
-function createContent(object: ObjectRepType, indents: number = 2) {
+export function createContent(object: ObjectRepType, indents: number = 2) {
   const content = [];
   Object.keys(object).forEach(key => {
     if (typeof object[key] === 'string') {
-      content.push(`${key}: ${object[key]},`);
+      content.push(`"${key}": ${object[key]},`);
     } else {
       const inner = createContent((object[key] as ObjectRepType));
       if (inner !== '{}') {
-        content.push(`${key}: ${inner},`);
+        content.push(`"${key}": ${inner},`);
       }
     }
   });

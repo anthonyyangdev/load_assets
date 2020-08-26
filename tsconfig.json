@@ -5,10 +5,12 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
   },
   "exclude": [
     "node_modules"
   ],
-  "include": ["src/"]
+  "include": ["src/",
+    "src/test/"
+  ]
 }
