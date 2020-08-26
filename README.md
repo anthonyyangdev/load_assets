@@ -4,7 +4,7 @@ This was built to support writing many imports/require statements for bundlers t
 
 ## Install
 ```bash
-npm install -g load_assets
+npm install -g @ayang4114/load_assets
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ Any arguments passed without a flag is treated as an argument for the `--input` 
 
 ## Supported Type Extensions
 
-By default: all files with the extensions jpg, jpeg, png, and gif are included when traversing through the assets array. These files can be ignored instead by adding the unwanted extensions as arguments for `--excludeExt`.
+By default, all files with the extensions jpg, jpeg, png, and gif are included when traversing through the assets directory. These files can be ignored by adding the unwanted extensions as arguments in `--excludeExt`.
 
 ## Example
 Consider the following tree:

@@ -1,5 +1,5 @@
 {
-  "name": "load_assets",
+  "name": "@ayang4114/load_assets",
   "version": "0.1.0-alpha.0",
   "license": "ISC",
   "description": "Generates a JavaScript file that loads all files via 'require' in a given directory. This is stored as an exported object.",
@@ -31,5 +31,11 @@
     "tslint": "^6.1.3",
     "typescript": "^4.0.2"
   },
-  "keywords": ["require", "images", "load", "assets", "static"]
+  "keywords": [
+    "require",
+    "images",
+    "load",
+    "assets",
+    "static"
+  ]
 }
