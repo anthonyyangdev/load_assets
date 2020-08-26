@@ -1,12 +1,17 @@
 # load_assets
 A command that generates a JavaScript file which contains an object that maps to loaded assets from a directory, including static images files, using require(...). 
-This was built to support writing many imports/require statements for bundlers that load static assets/resources.
+This was built to support writing many imports/require statements for bundlers that load static assets/resources like webpack.
+
+## Install
+```bash
+npm install -g @ayang4114/load_assets
+```
 
 ## Usage
 
 On the command line, execute the following command
 ```bash
-load_required_assets <directory_of_assets>
+load_assets <directory_of_assets>
 ```
 
 ## Flags
@@ -30,25 +35,24 @@ By default: all files with the extensions jpg, jpeg, png, and gif are included w
 Consider the following tree:
 ```txt
 assets
-├── moon.jpg
+├── moon.png
+├── sun.png
 ├── nested_assets_1
 │   ├── moon.jpg
 │   └── sun.jpg
-├── nested_assets_2
-│   ├── moon.jpg
-│   ├── nested_assets
-│   │   ├── moon.jpg
-│   │   └── sun.jpg
-│   └── sun.jpg
-└── sun.jpg
+└── nested_assets_2
+    ├── moon.jpg
+    ├── nested_assets
+    │   ├── moon.jpg
+    │   └── sun.jpg
+    └── sun.jpg
 ```
 
-Then, `load_required_assets assets` will produce the following output in `assets.js`:
+Then, `load_assets assets` will produce the following output in `assets.js`:
 
 ```javascript
 module.asset = {
   jpg: {
-    "moon": require("./assets/moon.jpg"),
     "nested_assets_1": {
       "moon": require("./assets/nested_assets_1/moon.jpg"),
       "sun": require("./assets/nested_assets_1/sun.jpg"),
@@ -61,7 +65,24 @@ module.asset = {
       },
       "sun": require("./assets/nested_assets_2/sun.jpg"),
     },
-    "sun": require("./assets/sun.jpg"),
   },
+  png: {
+    "moon": require("./assets/moon.png"),
+    "sun": require("./assets/sun.png"),
+  }
 };
 ```
+
+## Contributing
+
+Feel free to add issues or suggestions [in the repository](https://github.com/ayang4114/load_assets/issues/new).
+
+You can also make PRs:
+1) Fork the repository.
+2) Create a feature branch in the forked repository.
+3) Push changes to the feature branch.
+4) Submit a PR request.
+
+## License
+
+[ISC License](LICENSE.md)

@@ -1,10 +1,10 @@
 {
-  "name": "@ayang4114/load_assets",
+  "name": "load_assets",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "ISC",
   "description": "Generates a JavaScript file that loads all files via 'require' in a given directory. This is stored as an exported object.",
   "bin": {
-    "load_required_assets": "dist/load_assets-cli.js"
+    "load_assets": "dist/load_assets-cli.js"
   },
   "scripts": {
     "test": "mocha -r ts-node/register src/**/*.test.ts",
@@ -17,18 +17,19 @@
     "name": "Anthony Yang"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.160",
     "indent-string": "^4.0.0",
     "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@types/node": "^14.6.0",
     "@types/chai": "^4.2.12",
+    "@types/lodash": "^4.14.160",
     "@types/mocha": "^8.0.3",
     "chai": "^4.2.0",
     "mocha": "^8.1.2",
     "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
     "typescript": "^4.0.2"
-  }
+  },
+  "keywords": ["require", "images", "load", "assets", "static"]
 }
