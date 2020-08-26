@@ -4,7 +4,11 @@ import indent from 'indent-string';
 
 interface ObjectRepType extends Record<string, string | ObjectRepType> {}
 type SupportedLangType = 'ts' | 'js';
-type UriQueueType = {uri: string, object: Record<string, any>};
+type UriQueueType = {
+  uri: string
+  object: Record<string, any>
+  fullPath: string
+};
 
 export type RequireAllFilesConfig = {
   inputDirectory?: string
@@ -33,7 +37,8 @@ function createObjectRep(directory: string,
   const contentObject: ObjectRepType = {};
   const root: UriQueueType = {
     uri: directory,
-    object: contentObject
+    object: contentObject,
+    fullPath: pathPrefix
   };
   const queue: UriQueueType[] = [root];
   while (queue.length > 0) {
@@ -41,17 +46,19 @@ function createObjectRep(directory: string,
     const files = fs.readdirSync(uri);
     for (let file of files) {
       const currentPath = path.join(uri, file);
+      const fullPath = path.join(pathPrefix, file);
       const extension = path.extname(file).toLowerCase();
       const stats = fs.lstatSync(currentPath);
       if (stats.isDirectory()) {
         object[file] = {};
         queue.push({
           uri: currentPath,
-          object: object[file]
+          object: object[file],
+          fullPath: fullPath
         });
       } else if (stats.isFile() && supported.has(extension)) {
         const key = file.substring(0, file.lastIndexOf(extension)).replace('.', '_');
-        object[key] = `require("${pathPrefix}/${currentPath}")`
+        object[key] = `require("${fullPath}")`
       }
     }
   }
@@ -109,7 +116,7 @@ function generateRequireAllFiles(config: RequireAllFilesConfig): OutputType {
   const targetLang = config?.targetLang ?? 'js';
   const outputPath = config.outputFile ?? `assets.${targetLang}`;
 
-  let pathPrefix = path.relative(outputPath, directory);
+  let pathPrefix = path.relative(path.dirname(outputPath), directory);
   if (pathPrefix.length === 0) {
     pathPrefix = '.';
   } else if (pathPrefix[0] !== '.') {
